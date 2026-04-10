@@ -1,57 +1,56 @@
 # Homer Monitor
 
-Homer Monitor is a lightweight monitoring dashboard for self-hosted environments.
+这是一个面向自建环境的轻量级监控面板，主要用于集中查看：
 
-It is designed for teams that run websites behind Nginx and services in Docker, and want a simple page to check:
+- Nginx 代理站点状态
+- Docker 容器运行状态
+- HTTPS 证书过期时间与续期状态
+- 当前活跃告警
 
-- Nginx proxy site status
-- Docker container runtime status
-- TLS certificate expiration and renewal status
-- Active alerts in one place
+它适合部署在运维服务器、家庭实验室、公司内网或自托管平台中，用一个页面快速了解站点和服务的整体健康情况。
 
-The project supports automatic discovery of Nginx sites, Docker containers, and common certificate locations, and can be deployed with Docker Compose.
+## 功能特性
 
-## Features
+- 自动发现 Nginx 代理站点
+- 自动发现宿主机 Docker 容器
+- 自动识别 HTTPS 证书过期时间和剩余天数
+- 兼容常见自动续期方式，例如 `acme.sh`
+- 显示网页与容器的关联关系
+- 已关联网页的容器不在下方重复展示
+- 点击“关联容器”可弹出详情
+- 前端自动刷新状态数据
+- 支持 Docker Compose 一键部署
 
-- Auto-discover Nginx proxy sites from Nginx config
-- Auto-discover Docker containers from the host Docker daemon
-- Detect HTTPS certificate expiration time and remaining days
-- Recognize common auto-renew setups such as `acme.sh`
-- Show linked website and container relationships
-- Hide Docker services already linked to websites from the bottom list
-- Open related container details in a modal dialog
-- Refresh status automatically on the frontend
+## 技术栈
 
-## Stack
+- 前端：HTML / CSS / JavaScript
+- 采集器：Python
+- 部署方式：Docker Compose
+- Web 服务：Nginx
 
-- Frontend: plain HTML, CSS, JavaScript
-- Collector: Python
-- Deployment: Docker Compose
-- Web serving: Nginx
-
-## Quick Start
+## 快速启动
 
 ```bash
 cp .env.example .env
 docker-compose up -d --build
 ```
 
-Default access:
+默认访问地址：
 
 ```text
-http://YOUR_SERVER_IP:8088
+http://你的服务器IP:8088
 ```
 
-## How It Works
+## 工作原理
 
-The project runs two services:
+项目默认运行两个服务：
 
-- `web`: serves the dashboard page
-- `sync`: collects Nginx, Docker, and certificate data and writes `data/status.json`
+- `web`：负责提供监控页面
+- `sync`：负责采集 Nginx、Docker、证书信息，并写入 `data/status.json`
 
-The frontend reads `data/status.json` and updates automatically.
+前端页面会自动读取 `data/status.json`，并周期性刷新显示结果。
 
-## Project Structure
+## 目录结构
 
 ```text
 .
@@ -72,27 +71,27 @@ The frontend reads `data/status.json` and updates automatically.
 └── styles.css
 ```
 
-## Configuration
+## 配置说明
 
-Main config file:
+主配置文件：
 
 ```text
 config/services.json
 ```
 
-Default mode is automatic discovery:
+默认采用自动发现模式，会尝试：
 
-- scan Nginx config
-- scan Docker containers
-- inspect certificate paths
+- 扫描 Nginx 配置
+- 扫描 Docker 容器
+- 检测证书路径
 
-You can still use manual overrides for:
+你也可以通过手动配置做补充或覆盖，例如：
 
-- custom descriptions
-- custom domain labels
-- manual certificate metadata
+- 添加中文描述
+- 修正自动发现结果
+- 补充证书元信息
 
-Example:
+示例：
 
 ```json
 {
@@ -109,9 +108,9 @@ Example:
 }
 ```
 
-## Environment Variables
+## 环境变量
 
-Example `.env`:
+示例 `.env`：
 
 ```env
 HOMER_MONITOR_PORT=8088
@@ -121,45 +120,45 @@ MONITOR_CERT_WARNING_DAYS=30
 DOCKER_API_VERSION=1.43
 ```
 
-## Docker Compose Notes
+## Docker Compose 说明
 
-The sync container needs access to host resources in order to auto-discover services:
+为了实现自动发现，`sync` 容器需要读取宿主机的一些资源：
 
-- Docker socket
-- Nginx config directories
-- certificate directories
-- cron files when renewal detection is needed
+- Docker Socket
+- Nginx 配置目录
+- 证书目录
+- `cron` 相关目录
 
-If you use `acme.sh`, make sure the compose file mounts:
+如果你使用 `acme.sh` 管理证书，请确保 `docker-compose.yml` 中已经挂载：
 
 ```yaml
 - /root/.acme.sh:/root/.acme.sh:ro
 ```
 
-## Domain and HTTPS
+## 域名与 HTTPS
 
-Recommended setup:
+推荐使用方式：
 
-1. Run Homer Monitor on a local port with Docker Compose
-2. Use host Nginx to reverse proxy a public domain such as `homer.example.com`
-3. Issue a free certificate with Let's Encrypt or `acme.sh`
+1. 先通过 Docker Compose 在本地端口启动 Homer Monitor
+2. 再通过宿主机 Nginx 反向代理公开域名，例如 `homer.example.com`
+3. 使用 Let’s Encrypt 或 `acme.sh` 申请免费证书
 
-## UI Behavior
+## 页面交互说明
 
-- Clicking the website link opens the real website
-- Clicking `关联容器` opens related container details
-- The Docker list at the bottom only shows unlinked containers
+- 点击域名链接：直接打开对应网页
+- 点击“关联容器”：查看该域名对应的容器详情
+- 下方 Docker 列表仅显示未关联网页的容器
 
-## Common Use Cases
+## 适用场景
 
-- Internal infrastructure overview page
-- Nginx reverse proxy status page
-- Self-hosted Docker service dashboard
-- TLS certificate watch page
+- 内部运维总览页
+- Nginx 反向代理监控页
+- 自托管 Docker 服务监控面板
+- HTTPS 证书巡检页面
 
-## Deployment Guide
+## 部署手册
 
-A more detailed deployment guide is available in:
+更详细的部署说明见：
 
 ```text
 CONFIG_GUIDE.md
@@ -167,4 +166,4 @@ CONFIG_GUIDE.md
 
 ## License
 
-You can add your preferred license here, for example `MIT`.
+你可以在这里补充自己的开源协议，例如 `MIT`。

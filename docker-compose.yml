@@ -1,0 +1,41 @@
+version: "3.3"
+
+services:
+  web:
+    image: nginx:1.27-alpine
+    container_name: homer-monitor-web
+    restart: unless-stopped
+    ports:
+      - "${HOMER_MONITOR_PORT}:80"
+    volumes:
+      - ./:/usr/share/nginx/html:ro
+      - ./deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - sync
+
+  sync:
+    build:
+      context: .
+      dockerfile: ./deploy/sync/Dockerfile
+    container_name: homer-monitor-sync
+    restart: unless-stopped
+    environment:
+      MONITOR_SYNC_INTERVAL: "${MONITOR_SYNC_INTERVAL}"
+      MONITOR_TIMEOUT: "${MONITOR_TIMEOUT}"
+      MONITOR_CERT_WARNING_DAYS: "${MONITOR_CERT_WARNING_DAYS}"
+      DOCKER_API_VERSION: "${DOCKER_API_VERSION}"
+      MONITOR_CONFIG: /app/config/services.json
+      MONITOR_OUTPUT: /app/data/status.json
+    volumes:
+      - ./:/app
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/crontab:/etc/crontab:ro
+      - /etc/cron.d:/etc/cron.d:ro
+      - /var/spool/cron:/var/spool/cron:ro
+      - /var/spool/cron/crontabs:/var/spool/cron/crontabs:ro
+      - /etc/nginx:/etc/nginx:ro
+      - /usr/local/etc/nginx:/usr/local/etc/nginx:ro
+      - /opt/homebrew/etc/nginx:/opt/homebrew/etc/nginx:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /root/.acme.sh:/root/.acme.sh:ro
+    working_dir: /app

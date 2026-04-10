@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2026-04-10T12:51:59+08:00",
+  "autoSync": {
+    "enabled": true,
+    "intervalSeconds": 30
+  },
+  "overview": {
+    "healthScore": 0,
+    "message": "当前共有 6 条活跃告警，优先关注证书过期与停止中的容器。"
+  },
+  "nginx": {
+    "overallStatus": "error",
+    "summary": "存在不可用代理站点",
+    "proxies": [
+      {
+        "name": "admin-console",
+        "host": "admin.example.internal",
+        "target": "https://admin.example.internal/healthz",
+        "status": "error",
+        "description": "内部管理后台",
+        "metrics": {
+          "HTTP 检测": "请求失败",
+          "最近延迟": "--",
+          "容器关联": "gateway-api",
+          "证书状态": "error",
+          "上次检查": "12:51:59"
+        }
+      },
+      {
+        "name": "docs-portal",
+        "host": "docs.example.internal",
+        "target": "https://docs.example.internal/",
+        "status": "error",
+        "description": "知识库与文档门户",
+        "metrics": {
+          "HTTP 检测": "请求失败",
+          "最近延迟": "--",
+          "容器关联": "docs-web",
+          "证书状态": "error",
+          "上次检查": "12:51:59"
+        }
+      }
+    ]
+  },
+  "docker": {
+    "overallStatus": "error",
+    "summary": "Docker 信息读取失败",
+    "services": []
+  },
+  "certificates": {
+    "overallStatus": "error",
+    "summary": "存在异常或过期证书",
+    "items": [
+      {
+        "name": "admin-console-cert",
+        "domain": "admin.example.internal",
+        "status": "error",
+        "description": "管理后台 HTTPS 证书",
+        "metrics": {
+          "证书域名": "admin.example.internal",
+          "过期时间": "--",
+          "剩余天数": "--",
+          "自动更新时间": "2026-04-11T03:30:00+08:00",
+          "上次续期": "2026-04-01T03:31:00+08:00",
+          "检查时间": "2026-04-10T12:51:59+08:00"
+        },
+        "sourceUrl": "https://admin.example.internal/healthz"
+      },
+      {
+        "name": "docs-portal-cert",
+        "domain": "docs.example.internal",
+        "status": "error",
+        "description": "文档门户 HTTPS 证书",
+        "metrics": {
+          "证书域名": "docs.example.internal",
+          "过期时间": "--",
+          "剩余天数": "--",
+          "自动更新时间": "2026-04-11T03:30:00+08:00",
+          "上次续期": "2026-03-22T03:30:48+08:00",
+          "检查时间": "2026-04-10T12:51:59+08:00"
+        },
+        "sourceUrl": "https://docs.example.internal/"
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "title": "admin-console-cert 证书读取失败",
+      "level": "error",
+      "message": "[Errno 8] nodename nor servname provided, or not known"
+    },
+    {
+      "title": "admin-console 代理状态异常",
+      "level": "error",
+      "message": "[Errno 8] nodename nor servname provided, or not known"
+    },
+    {
+      "title": "docs-portal-cert 证书读取失败",
+      "level": "error",
+      "message": "[Errno 8] nodename nor servname provided, or not known"
+    },
+    {
+      "title": "docs-portal 代理状态异常",
+      "level": "error",
+      "message": "[Errno 8] nodename nor servname provided, or not known"
+    },
+    {
+      "title": "Docker 命令执行失败",
+      "level": "error",
+      "message": "command-not-found"
+    },
+    {
+      "title": "自动发现 Docker 服务失败",
+      "level": "warning",
+      "message": "command-not-found"
+    }
+  ]
+}

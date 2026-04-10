@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homer Monitor</title>
+    <link rel="stylesheet" href="./styles.css?v=20260410-3" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Infrastructure Pulse</p>
+          <h1>Nginx 与 Docker 运行监控台</h1>
+          <p class="hero-copy">
+            集中查看代理站点可用性、容器运行状态、异常告警和同步时间，适合部署在运维主机或内网状态页。
+          </p>
+        </div>
+        <div class="hero-meta">
+          <div class="meta-card">
+            <span>自动同步</span>
+            <strong id="auto-sync-state">检测中</strong>
+          </div>
+          <div class="meta-card">
+            <span>最近同步</span>
+            <strong id="last-sync">--</strong>
+          </div>
+          <button id="manual-refresh" class="refresh-button" type="button">
+            立即刷新
+          </button>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="summary-grid" id="summary-grid">
+          <article class="summary-card">
+            <span>代理站点</span>
+            <strong id="proxy-total">0</strong>
+            <small id="proxy-status-text">等待数据</small>
+          </article>
+          <article class="summary-card">
+            <span>Docker 服务</span>
+            <strong id="docker-total">0</strong>
+            <small id="docker-status-text">等待数据</small>
+          </article>
+          <article class="summary-card">
+            <span>活跃告警</span>
+            <strong id="alert-total">0</strong>
+            <small id="alert-status-text">等待数据</small>
+          </article>
+          <article class="summary-card highlight">
+            <span>整体健康度</span>
+            <strong id="health-score">--</strong>
+            <small id="health-text">等待同步</small>
+          </article>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-tag">Nginx Proxy</p>
+              <h2>代理站点监控</h2>
+            </div>
+            <span id="proxy-badge" class="status-badge neutral">等待数据</span>
+          </div>
+          <div id="proxy-list" class="row-list empty-state">
+            还没有代理站点数据，请先运行同步脚本。
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-tag">Docker Runtime</p>
+              <h2>未关联网页的容器</h2>
+            </div>
+            <span id="docker-badge" class="status-badge neutral">等待数据</span>
+          </div>
+          <div id="docker-list" class="row-list empty-state">
+            还没有 Docker 服务数据，请先运行同步脚本。
+          </div>
+        </section>
+
+        <section class="panel alerts-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-tag">Operations Watch</p>
+              <h2>异常与建议</h2>
+            </div>
+            <span id="recommendation-count" class="status-badge neutral">0 条建议</span>
+          </div>
+          <div id="alert-list" class="alert-list empty-state">
+            暂无告警，系统同步后会在这里展示异常摘要和处理建议。
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <template id="service-row-template">
+      <article class="service-row">
+        <div class="service-main">
+          <h3 class="service-title"></h3>
+          <a class="service-primary-link" target="_blank" rel="noreferrer"></a>
+          <p class="service-description"></p>
+        </div>
+        <div class="service-status">
+          <span class="status-badge"></span>
+        </div>
+        <dl class="service-metrics"></dl>
+        <div class="service-actions"></div>
+      </article>
+    </template>
+
+    <template id="alert-template">
+      <article class="alert-item">
+        <div class="alert-header">
+          <strong class="alert-title"></strong>
+          <span class="status-badge"></span>
+        </div>
+        <p class="alert-message"></p>
+      </article>
+    </template>
+
+    <div id="detail-modal" class="detail-modal hidden" aria-hidden="true">
+      <div class="detail-backdrop" id="detail-backdrop"></div>
+      <div class="detail-dialog">
+        <div class="detail-header">
+          <div>
+            <p class="section-tag">Details</p>
+            <h2 id="detail-title">关联容器详情</h2>
+          </div>
+          <button id="detail-close" class="detail-close" type="button">关闭</button>
+        </div>
+        <div id="detail-body" class="detail-body"></div>
+      </div>
+    </div>
+
+    <script src="./app.js?v=20260410-4"></script>
+  </body>
+</html>

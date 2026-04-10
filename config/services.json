@@ -1,0 +1,14 @@
+{
+  "autoDiscovery": {
+    "enabled": true,
+    "nginxConfigFiles": [
+      "/etc/nginx/nginx.conf",
+      "/etc/nginx/conf.d/*.conf",
+      "/etc/nginx/sites-enabled/*",
+      "/usr/local/etc/nginx/nginx.conf",
+      "/opt/homebrew/etc/nginx/nginx.conf"
+    ]
+  },
+  "proxies": [],
+  "dockerServices": []
+}

@@ -90,7 +90,19 @@ function createMetricItem(label, value) {
   const term = document.createElement("dt");
   const desc = document.createElement("dd");
   term.textContent = label;
-  desc.textContent = formatMetricValue(label, value);
+  if (value && typeof value === "object" && value.type === "action") {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "metric-action";
+    button.textContent = value.text;
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      value.onClick();
+    });
+    desc.append(button);
+  } else {
+    desc.textContent = formatMetricValue(label, value);
+  }
   wrapper.append(term, desc);
   return wrapper;
 }
@@ -102,7 +114,6 @@ function createRow(item) {
   const description = row.querySelector(".service-description");
   const badge = row.querySelector(".status-badge");
   const metrics = row.querySelector(".service-metrics");
-  const actions = row.querySelector(".service-actions");
 
   safeSetText(titleNode, item.name);
   if (item.primaryLink?.url && link) {
@@ -123,20 +134,6 @@ function createRow(item) {
     Object.entries(item.metrics || {}).forEach(([label, value]) => {
       metrics.append(createMetricItem(label, value));
     });
-  }
-
-  if (item.action && actions) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "service-action";
-    button.textContent = item.action.label;
-    button.addEventListener("click", (event) => {
-      event.stopPropagation();
-      item.action.onClick();
-    });
-    actions.append(button);
-  } else if (actions) {
-    actions.remove();
   }
 
   return row;
@@ -238,6 +235,14 @@ function buildProxyRows(proxies, containers, certificateMap) {
       .filter((item) => item !== "--");
     const linkedContainers = linkedNames.map((name) => containerMap.get(name)).filter(Boolean);
 
+    const relatedContainerMetric = linkedContainers.length
+      ? {
+          type: "action",
+          text: linkedNames.join(", "),
+          onClick: () => openDetailModal(`${proxy.host || proxy.name} 关联容器`, buildDockerDetailRows(linkedContainers)),
+        }
+      : "无";
+
     return {
       name: proxy.host || proxy.name,
       primaryLink: proxy.target ? { label: proxy.target, url: proxy.target } : null,
@@ -247,19 +252,13 @@ function buildProxyRows(proxies, containers, certificateMap) {
       metrics: {
         "HTTP 检测": proxy.metrics?.["HTTP 检测"] || "--",
         "最近延迟": proxy.metrics?.["最近延迟"] || "--",
-        "关联容器": linkedNames.join(", ") || "无",
+        "关联容器": relatedContainerMetric,
         "证书状态": certificate ? certificate.status : "未配置证书",
         "证书过期": certMetrics["过期时间"] || "未配置证书",
         "剩余天数": certMetrics["剩余天数"] || "--",
         "自动更新": certMetrics["自动更新时间"] || "--",
         "检查时间": certMetrics["检查时间"] || proxy.metrics?.["上次检查"] || "--",
       },
-      action: linkedContainers.length
-        ? {
-            label: "关联容器",
-            onClick: () => openDetailModal(`${proxy.host || proxy.name} 关联容器`, buildDockerDetailRows(linkedContainers)),
-          }
-        : null,
     };
   });
 }

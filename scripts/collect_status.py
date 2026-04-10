@@ -394,6 +394,8 @@ def merge_discovered_config(user_config):
     if name not in merged_services:
       merged_services[name] = service
 
+  auto_link_proxies_to_docker(merged_proxies, merged_services)
+
   for proxy in merged_proxies:
     for service_name in proxy.get("dockerServices", []):
       service = merged_services.setdefault(service_name, {"name": service_name, "description": "手动配置的 Docker 服务", "sites": []})
@@ -406,7 +408,6 @@ def merge_discovered_config(user_config):
           }
         )
 
-  auto_link_proxies_to_docker(merged_proxies, merged_services)
   return {
     "proxies": merged_proxies,
     "dockerServices": list(merged_services.values()),
